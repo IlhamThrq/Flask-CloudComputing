@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Prediksi Diabetes</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #0ea5e9; /* Biru cerah */
+            --secondary-color: #14b8a6; /* Teal / Hijau kebiruan (Kesehatan) */
+            --bg-gradient: linear-gradient(135deg, #e0f2fe 0%, #ccfbf1 100%);
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --text-dark: #1e293b;
+            --text-muted: #64748b;
+            --border-color: #cbd5e1;
+            --focus-ring: rgba(14, 165, 233, 0.3);
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--bg-gradient);
+            color: var(--text-dark);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 30px 15px;
+            box-sizing: border-box;
+        }
+
+        .container {
+            background: var(--card-bg);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(15, 23, 42, 0.08);
+            max-width: 750px;
+            width: 100%;
+            backdrop-filter: blur(10px); /* Efek glassmorphism tipis */
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 28px;
+            font-weight: 700;
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header p {
+            margin: 8px 0 0 0;
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 4px;
+            font-size: 14px;
+            color: var(--text-dark);
+        }
+
+        /* Teks bantuan agar lebih informatif */
+        .helper-text {
+            display: block;
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+
+        input[type="number"],
+        input[type="text"],
+        select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1.5px solid var(--border-color);
+            border-radius: 10px;
+            box-sizing: border-box;
+            font-size: 14px;
+            font-family: 'Poppins', sans-serif;
+            transition: all 0.3s ease;
+            background-color: #f8fafc;
+        }
+
+        input[type="number"]:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            background-color: #ffffff;
+            box-shadow: 0 0 0 4px var(--focus-ring);
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 5px 25px;
+        }
+
+        button {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            font-family: 'Poppins', sans-serif;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 25px;
+            box-shadow: 0 10px 20px rgba(14, 165, 233, 0.2);
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 25px rgba(14, 165, 233, 0.3);
+        }
+
+        button:active {
+            transform: translateY(1px);
+        }
+
+        /* Kotak hasil yang lebih elegan */
+        .result-card {
+            margin-bottom: 30px;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .result-diabetic {
+            background-color: #fef2f2;
+            border: 2px solid #fecaca;
+            color: #b91c1c;
+        }
+
+        .result-nondiabetic {
+            background-color: #f0fdf4;
+            border: 2px solid #bbf7d0;
+            color: #15803d;
+        }
+
+        .result-title {
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+
+        .result-value {
+            font-size: 22px;
+            font-weight: 700;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 600px) {
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+            .container {
+                padding: 25px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1>HealthAI Diabetes Check</h1>
+        <p>Masukkan metrik kesehatan di bawah ini untuk melihat hasil prediksi model *Machine Learning*.</p>
+    </div>
+
+    {% if prediction %}
+        {% if prediction == "Diabetic" %}
+        <div class="result-card result-diabetic">
+            <div class="result-title">Hasil Prediksi Analisis:</div>
+            <div class="result-value">⚠️ Terindikasi Diabetes</div>
+        </div>
+        {% else %}
+        <div class="result-card result-nondiabetic">
+            <div class="result-title">Hasil Prediksi Analisis:</div>
+            <div class="result-value">✅ Non-Diabetic (Sehat)</div>
+        </div>
+        {% endif %}
+    {% endif %}
+
+    <form action="/predict" method="POST">
+        <div class="form-group" style="margin-bottom: 25px;">
+            <label for="model">Pilih Model Algoritma</label>
+            <select name="model" id="model">
+                {% for m in model_names %}
+                <option value="{{ m }}">{{ m }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="grid-2">
+            <div class="form-group">
+                <label for="Pregnancies">Pregnancies</label>
+                <span class="helper-text">Jumlah kehamilan yang pernah dialami</span>
+                <input type="number" name="Pregnancies" id="Pregnancies" required placeholder="Contoh: 0">
+            </div>
+            
+            <div class="form-group">
+                <label for="Glucose">Glucose</label>
+                <span class="helper-text">Konsentrasi glukosa plasma (mg/dL)</span>
+                <input type="number" name="Glucose" id="Glucose" required placeholder="Contoh: 120">
+            </div>
+            
+            <div class="form-group">
+                <label for="BloodPressure">Blood Pressure</label>
+                <span class="helper-text">Tekanan darah diastolik (mm Hg)</span>
+                <input type="number" name="BloodPressure" id="BloodPressure" required placeholder="Contoh: 80">
+            </div>
+            
+            <div class="form-group">
+                <label for="SkinThickness">Skin Thickness</label>
+                <span class="helper-text">Ketebalan lipatan kulit trisep (mm)</span>
+                <input type="number" name="SkinThickness" id="SkinThickness" required placeholder="Contoh: 20">
+            </div>
+            
+            <div class="form-group">
+                <label for="Insulin">Insulin</label>
+                <span class="helper-text">Kadar insulin serum 2 jam (mu U/ml)</span>
+                <input type="number" name="Insulin" id="Insulin" required placeholder="Contoh: 85">
+            </div>
+            
+            <div class="form-group">
+                <label for="BMI">Body Mass Index (BMI)</label>
+                <span class="helper-text">Indeks Massa Tubuh (kg/m²)</span>
+                <input type="number" step="0.01" name="BMI" id="BMI" required placeholder="Contoh: 25.5">
+            </div>
+            
+            <div class="form-group">
+                <label for="DiabetesPedigreeFunction">Pedigree Function</label>
+                <span class="helper-text">Skor riwayat diabetes dalam keluarga</span>
+                <input type="number" step="0.001" name="DiabetesPedigreeFunction" id="DiabetesPedigreeFunction" required placeholder="Contoh: 0.520">
+            </div>
+            
+            <div class="form-group">
+                <label for="Age">Age</label>
+                <span class="helper-text">Usia pasien (tahun)</span>
+                <input type="number" name="Age" id="Age" required placeholder="Contoh: 35">
+            </div>
+        </div>
+
+        <button type="submit">Jalankan Prediksi</button>
+    </form>
+</div>
+
+</body>
+</html>
